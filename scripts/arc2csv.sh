@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/bash -x
 # script for execution of deployed applications
 #
 # Sets up the MCR environment for the current $ARCH and executes 
@@ -11,7 +11,7 @@ USAGE="$0 {matout directory} {csvName}"
 [ $# = 2 ] || die "$USAGE"
 
 exe_name=$0
-exe_dir="$HOME/bin/ArcServer"
+exe_dir="$SPARCFIRE_HOME/scripts/ArcServer"
 #MCRROOT=/pkg/matlab/current
 #MCRROOT=$HOME/global-data/MCRlib/v717
 #MCRROOT=/pkg/matlab/R2014a

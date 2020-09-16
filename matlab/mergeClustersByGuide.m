@@ -1,4 +1,4 @@
-function [clusMtxs, nMerges] = mergeClustersByGuide(clusMtxs, outputPath, threshold)
+function [clusMtxs, nMerges] = mergeClustersByGuide(clusMtxs, outputPath, threshold, guideImageFile)
 % Merges clusters that are sufficiently close and retain a good log-spiral
 %   fit. Unlike the main HAC step, this uses arc fits but not pixel 
 %   similarities.
@@ -8,7 +8,10 @@ function [clusMtxs, nMerges] = mergeClustersByGuide(clusMtxs, outputPath, thresh
 %   outputPath: filename where SpArcFiRe galaxy info should be
 %   threshold: a scalar that indicates to merge clusters after their overlap
 %       passes the threshold
+%   guideImageFile: path to image to be used as guide
 
+fprintf('Using %s as guide image.\n',guideImageFile);
+guideImage = imread(guideImageFile);
 if size(clusMtxs, 3) == 0
     nMerges = 0;
     return;
@@ -17,11 +20,12 @@ end
 tMerge = tic;
 
 % Get guide clusters
-color = outputPath(end-1:end);
-meanPicPath = strcat(outputPath, '-H_clusMask-merged.png');
-meanPicPath = regexprep(meanPicPath, color, '_mean');
-guideClusMask = imread(meanPicPath);
-guideClusMask_columns = reshape(guideClusMask, [], 3);
+%color = outputPath(end-1:end);
+%meanPicPath = strcat(outputPath, '-H_clusMask-merged.png');
+%meanPicPath = regexprep(meanPicPath, color, '_mean');
+%guideClusMask = imread(meanPicPath);
+%guideClusMask_columns = reshape(guideClusMask, [], 3);
+guideClusMask_columns = reshape(guideImage, [], 3);
 [unique_guide_clusters, m, n] = unique(guideClusMask_columns, 'rows');
 guideClusters = zeros(256, 256, size(unique_guide_clusters,1)-1);
 for g = 2:size(unique_guide_clusters,1)
@@ -45,7 +49,7 @@ imgBinary = logical(clusMtxs);
 nMerges = 0;
 for i = 1:nClus
     maxClus = -1;
-    maxIntersect = 0.0;
+    maxIntersect = threshold;
     for r = 1:nGuideClus
         x = guideBinary(:,:,r) & imgBinary(:,:,i);
         total_intersect = nnz(x);
